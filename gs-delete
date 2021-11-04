@@ -47,7 +47,7 @@ for study in $studies; do
 	fi
 
 	# Deleting S3 Bucket
-	s3res=$((s3cmd rm -r "s3://${bucket}/${study}/") 2>&1)
+	s3res=$(s3cmd rm -r "s3://${bucket}/${study}/" 2>&1)
 
 	if [[ "$s3res" == WARNING* ]]; then
 		echo -e "\e[33mcouldn't delete s3 bucket for ${study}\e[0m"
