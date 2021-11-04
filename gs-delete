@@ -29,10 +29,10 @@ esac
 
 echo -e "\e[1m\e[31mYou are about to delete from ${server} server.\e[0m"
 
-if [[ -f "gs-delete" ]]; then
-	./gs-delete
+if [[ -f "gs-public" ]]; then
+	./gs-public
 else
-	echo -e "\e[33mgs-delete doesn't exist. can't ensure S3 bucket is accessable\e[0m"
+	echo -e "\e[33mgs-public doesn't exist. can't ensure S3 bucket is accessable\e[0m"
 fi
 
 for study in $studies; do
