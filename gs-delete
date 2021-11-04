@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Script for mass deleting genestack studies by their study accession
+# Author: Michael Grace <mg38@sanger.ac.uk>
+
+if [[ $# -lt 3 || ! ($1 == "genestack" || $1 == "genestack-qc") ]]; then
+	echo "usage: gs-delete {genestack|genestack-qc} TOKEN [study_accession ...]"
+	exit 1
+fi
+
+server=$1
+token=$2
+studies=${@:3}
+
+case $server in
+
+	"genestack")
+		bucket="genestackupload"
+		;;
+
+	"genestack-qc")
+		bucket="genestackuploadtest"
+		;;
+
+	*)
+		exit 1
+		;;
+esac
+
+echo -e "\e[1m\e[31mYou are about to delete from ${server} server.\e[0m"
+
+if [[ -f "gs-delete" ]]; then
+	./gs-delete
+else
+	echo -e "\e[33mgs-delete doesn't exist. can't ensure S3 bucket is accessable\e[0m"
+fi
+
+for study in $studies; do
+	echo "Deleting ${study}"
+	
+	# Deleting from Genestack
+	gsres=$(curl -s -X "DELETE" "https://${server}.sanger.ac.uk/frontend/rs/genestack/studyCurator/default-released/studies/${study}" \
+		-H "Genestack-API-Token: ${token}")
+	
+	if [[ "$gsres" != "" ]]; then
+		echo -e "\e[33m${gsres}\e[0m"
+	fi
+
+	# Deleting S3 Bucket
+	s3res=$((s3cmd rm -r "s3://${bucket}/${study}/") 2>&1)
+
+	if [[ "$s3res" == WARNING* ]]; then
+		echo -e "\e[33mcouldn't delete s3 bucket for ${study}\e[0m"
+	fi
+	
+	# Logging
+	echo "$(date) - ${study} from ${server} deleted" >> .gs-delete.log
+done
