@@ -29,11 +29,7 @@ function blue_text {
 }
 
 function private_bucket {
-    if [[ -f "${HOME}/gs-private" ]]; then
-        ~/gs-private > /dev/null &
-    else
-        red_text "can't make S3 buckets private"
-    fi
+    gs-private > /dev/null &
     exit $1
 }
 
@@ -49,12 +45,8 @@ else
     instance="Main Genestack"
 fi
 
-if [[ -f "${HOME}/gs-public" ]]; then
-    # WARNING: Make sure we make the buckets private again after
-    ~/gs-public > /dev/null
-else
-    yellow_text "can't make the S3 policy public - may not be able to upload"
-fi
+# WARNING: Make sure we make the buckets private again after
+gs-public > /dev/null
 
 # Let's see if the project already exists
 project_loc=$((1 + $offset))
