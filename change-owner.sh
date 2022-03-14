@@ -46,7 +46,7 @@ cp .change_owner.sql $NEW_FILE
 
 # Change the user emails
 sed -i "s/current_owner@genestack.com/${1}/" $NEW_FILE
-sed -i "s/tester_user@genestack.com/${1}/" $NEW_FILE
+sed -i "s/tester_user@genestack.com/${2}/" $NEW_FILE
 
 # Sort Out Logging Area
 AUDIT_DIR=~/.audit.gs_owner
@@ -75,3 +75,4 @@ docker restart genestack_backend_1
 
 tput setaf 2
 echo "Done"
+tput setaf 9
