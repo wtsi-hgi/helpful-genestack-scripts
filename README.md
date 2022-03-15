@@ -56,3 +56,21 @@ This script allows you to change the owner of studies in Genestack.
 **Location:** This script must be run on the instance running the Genestack containers for the instance you're updating. This is because it has to execute in the database container, and restart the backend continaer (to clear the cache).
 
 **Logging:** This script logs to `~/.audit.gs_owner`, logging the transfer that happened, and the output from the SQL. This output can be used to reverse the change if neccesary.
+
+---
+
+## `rollback-owner-change.sh`
+
+This script will allow to rollback a change made by `change-owner.sh`.
+
+**Usage:**
+```
+./rollback-owner-change.sh TIMESTAMP
+```
+where TIMESTAMP is the timestamp tagged onto the files logged by the original script in the auditing directory.
+
+**Note:** This needs to find the logged files from that run, so make sure they exist.
+
+**Location:** This script must be run on the instance running the Genestack containers for the instance you're updating. This is because it has to execute in the database container, and restart the backend container (to clear the cache).
+
+**Logging:** This script logs to `~/.audit.gs_owner`, logging the revertion that happened.
