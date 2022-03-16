@@ -4,10 +4,14 @@
 
 # Author: Michael Grace <mg38@sanger.ac.uk>
 
-if [ $# -ne 2 ]; then
+usage () {
     echo "usage: change-owner.sh CURRENT_OWNER_EMAIL NEW_OWNER_EMAIL" >&2
     exit 1
-fi
+}
+
+[[ $# -ne 2 ]] && usage
+[[ $(echo $1 | grep @) == "" ]] && usage
+[[ $(echo $2 | grep @) == "" ]] && usage
 
 yn () {
     while true; do

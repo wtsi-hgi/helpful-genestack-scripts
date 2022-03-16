@@ -5,10 +5,12 @@
 
 # Author: Michael Grace <mg38@sanger.ac.uk>
 
-if [ $# -ne 1 ]; then
+usage () {
 	echo "usage: rollback-owner-change.sh TIMESTAMP" >&2
 	exit 1
-fi
+}
+
+[[ $# -ne 1 ]] && usage
 
 TIMESTAMP=$1
 
