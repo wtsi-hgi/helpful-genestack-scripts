@@ -74,3 +74,23 @@ where TIMESTAMP is the timestamp tagged onto the files logged by the original sc
 **Location:** This script must be run on the instance running the Genestack containers for the instance you're updating. This is because it has to execute in the database container, and restart the backend container (to clear the cache).
 
 **Logging:** This script logs to `~/.audit.gs_owner`, logging the revertion that happened.
+
+---
+
+## `s3_backup.sh`
+
+This script will backup* all the data in the two Genestack S3 buckets, `genestackupload` and `genestackuploadtest`.
+
+_*: backup being "create a copy of" - it's copied to `/lustre` (which isn't backed up) and `/hgi` (which we don't think is backed up)_
+
+This can be run as a frequent cronjob. It will `rclone sync` the buckets to directories in `DIR` defined at the top, (at the end we run `chmod -R o-rwx` on this area). If there is a change, it'll create a new backup in `$DIR` - this is a `.tar.gz` file with the datetime it was created as the title.
+
+It will then copy this to `/hgi/backup` (also defined as `$COPY_DIR`) at the top - this copy will overwrite the existing file there (there's two files - one for each bucket).
+
+Finally, assuming there are at least 6 backups from the last 6 months, it'll delete any of these backups older than 6 months.
+
+**Warning:** this'll delete any _files_ in the root level of `$DIR` older than 6 months
+
+**Location:** this is intended to be run as `mercury` on `hgi-farm5`, hence defining the `$PATH` to include the latest version of `rclone`, and using `/usr/bin/find` to use the `-delete` flag, so we're not hindered by the armed environment.
+
+We also need `gs-public` and `gs-private` in the `$PATH`
