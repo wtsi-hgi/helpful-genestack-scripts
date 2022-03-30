@@ -7,12 +7,8 @@ COPY_DIR=/hgi/backup
 
 PATH=/software/hgi/installs/anaconda3/envs/hgi_base/bin:$PATH
 
-cd $DIR
-
-echo Making Buckets Public
-gs-public >/dev/null
-
-for bucket in "genestackupload" "genestackuploadtest"; do
+process_bucket () {
+    local bucket=$1
 
     mkdir -p .s3_backup_$bucket
 
@@ -36,8 +32,18 @@ for bucket in "genestackupload" "genestackuploadtest"; do
     else
         echo No Changes for $bucket
     fi
+}
 
+cd $DIR
+
+echo Making Buckets Public
+gs-public >/dev/null
+
+for bucket in "genestackupload" "genestackuploadtest"; do
+    process_bucket $bucket &
 done
+
+wait
 
 if [[ $(find . -maxdepth 1 -type f -mtime -6 | wc -l) -ge 6 ]]; then
     echo "We've got at least 6 backups from the last 6 months"
@@ -48,7 +54,7 @@ else
     echo "We're not going to delete any of the older backups"
 fi
 
-cd -
+cd - >/dev/null
 
 echo Making Buckets Private
 gs-private >/dev/null
