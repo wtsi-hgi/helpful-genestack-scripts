@@ -32,7 +32,7 @@ log () {
 }
 
 submit_jobs_cpu_count () {
-	# submits a farm job
+    # submits a farm job
     # the first argument is the number of cpus
     # to request, and the remaining arguments are the
     # command to run
@@ -44,7 +44,7 @@ submit_jobs_cpu_count () {
     # this function prints the job ID given
     
     local new=.tmp/$RANDOM$RANDOM$RANDOM
-	echo ${@:2} > $new
+    echo ${@:2} > $new
 
     bsub -o .tmp/%J -e .tmp/%J -G hgi -n $1 bash $new | awk -F '<|>' '{print $2}'
 }
@@ -68,8 +68,8 @@ view_job_output() {
     local JOB_ID=$1
     
     while true; do
-	    sleep 5
-	    [[ $(bjobs | grep $(whoami) | awk -v job_id="$JOB_ID" -F ' ' '{if ($1 == job_id) {print}}') == "" ]] && break
+        sleep 5
+        [[ $(bjobs | grep $(whoami) | awk -v job_id="$JOB_ID" -F ' ' '{if ($1 == job_id) {print}}') == "" ]] && break
     done
 
     cat .tmp/$JOB_ID
@@ -110,7 +110,7 @@ process_bucket () {
         
         # Make the original tarball
         # (this is a wonderful yet also horrific command)
-	    local JOB_ID=$(submit_job \(find .s3_backup_$bucket -size +5G -exec echo --exclude={} \\\;\; echo '-czf' $DIR/$FNAME .s3_backup_$bucket\) \| xargs tar)
+        local JOB_ID=$(submit_job \(find .s3_backup_$bucket -size +5G -exec echo --exclude={} \\\;\; echo '-czf' $DIR/$FNAME .s3_backup_$bucket\) \| xargs tar)
 
         log $bucket Tarball Job - $JOB_ID
         view_job_output $JOB_ID
@@ -135,7 +135,7 @@ process_bucket () {
         
         # Delete Old Files from IRODS
         for irods_file in $(ils $IRODS_LOC/$bucket | tail +2); do
-    		[[ -f .tmp_tar.$bucket/$irods_file ]] || (irm $IRODS_LOC/$bucket/$irods_file && log $bucket Deleted $irods_file from IRODS)
+            [[ -f .tmp_tar.$bucket/$irods_file ]] || (irm $IRODS_LOC/$bucket/$irods_file && log $bucket Deleted $irods_file from IRODS)
         done
 
         /bin/rm -r .tmp_tar.$bucket
@@ -144,13 +144,24 @@ process_bucket () {
     fi
 
     # Do we get rid of any old tarballs?
+    # We keep the last 6 backups or 6 months worth of backups - whichever's more
     if [[ $(find . -maxdepth 1 -type f -mtime -6 -name "*.$bucket.tar.gz" | wc -l) -ge 6 ]]; then
         log $bucket "We've got at least 6 backups from the last 6 months"
         log $bucket "We're going to delete backups from older than 6 months"
-        /usr/bin/find . -maxdepth 1 -type f -mtime +6 -name "*.$bucket.tar.gz" -delete
+        /usr/bin/find . -maxdepth 1 -type f -mtime +6 -name "*.$bucket.tar.gz" -delete -print
     else
         log $bucket "We don't have 6 backups from the last 6 months"
-        log $bucket "We're not going to delete any backups"
+
+        if [[ $(ls -1 *.$bucket.tar.gz | wc -l) -ge 6 ]]; then
+            log $bucket "We've got at least 6 backups though, so we'll just keep those"
+            for f in $(ls -1t *.$bucket.tar.gz | tail +7); do
+                echo $bucket Deleting $f
+                /bin/rm $f
+            done
+        else
+            log $bucket "We haven't even got 6 backups in total"
+            log $bucket "We're not going to delete any"
+        fi
     fi
 }
 
