@@ -26,10 +26,10 @@ submit_job () {
 
 tail_job_output() {
     local JOB_ID=$1
-
+    
     while true; do
-	    [[ $(bjobs | grep $JOB_ID) == "" ]] && break
 	    sleep 5
+	    [[ $(bjobs | grep $(whoami) | awk -v job_id="$JOB_ID" -F ' ' '{if ($1 == job_id) {print}}') == "" ]] && break
     done
 
     cat .tmp/$JOB_ID
@@ -48,7 +48,7 @@ process_bucket () {
     # Do we make a new tarball?
     if [[ $(echo $RCLONE_OUT | grep '0 Bytes') == "" ]]; then
         log $bucket "Something's different - let's create a new tarball"
-
+        
         # Let's look at what we're not including (anything over 5GB)
         echo Excluding These Files - They are Over 5GB > .s3_backup_$bucket/BACKUP_README
         find .s3_backup_$bucket -size +5G >> .s3_backup_$bucket/BACKUP_README
@@ -56,7 +56,7 @@ process_bucket () {
         local FNAME=$(date -u '+%Y%m%d%H%M%S').$bucket.tar.gz
         
         # Make the original tarball
-        local JOB_ID=$(submit_job find .s3_backup_$bucket -size +5G -exec echo --exclude={} \\\; \| xargs -I '{}' tar '{}' -czf $DIR/$FNAME .s3_backup_$bucket)
+	    local JOB_ID=$(submit_job \(find .s3_backup_$bucket -size +5G -exec echo --exclude={} \\\;\; echo '-czf' $DIR/$FNAME .s3_backup_$bucket\) \| xargs tar) # this is certainly a command
 
         log $bucket Tarball Job - $JOB_ID
         tail_job_output $JOB_ID
@@ -68,7 +68,7 @@ process_bucket () {
         # Let's Split It Up
         mkdir .tmp_tar.$bucket
         local JOB_ID=$(submit_job split -b 10G -d $FNAME .tmp_tar.$bucket/$bucket.tar.gz.)
-
+        
         log $bucket Split Job - $JOB_ID
         tail_job_output $JOB_ID
 
@@ -78,10 +78,10 @@ process_bucket () {
 
         log $bucket IRODS Sync Job - $JOB_ID
         tail_job_output $JOB_ID
-
+        
         # Delete Old Files from IRODS
-        for irods_file in $(ils $IRODS_LOC/$bucket); do
-            [[ -f .tmp_tar.$bucket/$irods_file ]] || irm $IRODS_LOC/$bucket/$irods_file && log $bucket Deleted $irods_file from IRODS
+        for irods_file in $(ils $IRODS_LOC/$bucket | tail +2); do
+    		[[ -f .tmp_tar.$bucket/$irods_file ]] || (irm $IRODS_LOC/$bucket/$irods_file && log $bucket Deleted $irods_file from IRODS)
         done
 
         /bin/rm -r .tmp_tar.$bucket
@@ -112,7 +112,7 @@ done
 
 wait
 
-#/bin/rm -r .tmp
+/bin/rm -r .tmp
 cd - > /dev/null
 
 log root Making Buckets Private
@@ -121,3 +121,4 @@ gs-private > /dev/null
 log root Ensuring o-rwx for $DIR
 chmod -R o-rwx $DIR
 
+log root Done
