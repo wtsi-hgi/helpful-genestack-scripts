@@ -23,7 +23,7 @@ DIR=/lustre/scratch119/humgen/teams/hgi/genestack/backups
 # else should be stored in this area
 IRODS_LOC=/humgen/teams/hgi/genestack-backups
 
-PATH=/software/hgi/installs/anaconda3/envs/hgi_base/bin:/nfs/users/nfs_m/mercury/genestack:$PATH
+PATH=/software/hgi/installs/anaconda3/condabin:/software/hgi/installs/anaconda3/envs/hgi_base/bin:/nfs/users/nfs_m/mercury/genestack:$PATH
 
 log () {
     # log a message along with timestamp and part
