@@ -92,3 +92,6 @@ Finally, assuming there are at least 6 backups from the last 6 months, it'll del
 **Location:** this is intended to be run as `mercury` on `hgi-farm5`, hence defining the `$PATH` to include the latest version of `rclone`, and using `/usr/bin/find` to use the `-delete` flag, so we're not hindered by the armed environment.
 
 We also need `gs-public` and `gs-private` in the `$PATH`
+
+## `delete template`
+see [README](./delete-template/README.md)
