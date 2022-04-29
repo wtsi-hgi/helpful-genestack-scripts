@@ -94,4 +94,4 @@ Finally, assuming there are at least 6 backups from the last 6 months, it'll del
 We also need `gs-public` and `gs-private` in the `$PATH`
 
 ## `delete template`
-see [README](./delete-template/README.md)
+see [README](./delete-template/README.md) in `./delete-template/` folder
