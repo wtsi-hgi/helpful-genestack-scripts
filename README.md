@@ -32,7 +32,7 @@ By default, will upload to the main Genestack bucket for use on the main Genesta
 The project name is purely for organisation within the bucket. You can specify multiple files, and glob patterns are allowed.
 
 **Location:**
-This is in `mercury`'s `$PATH`, so can be just run using `gs-upload`. It is located in `~/genestack`.
+This is in `mercury`'s `$PATH`, so can be just run using `gs-upload`. (It is located/symliked in `/software/hgi/installs/genestack/bin/`).
 
 *There's a full description on the Confluence page for the Genestack Uploader app.*
 

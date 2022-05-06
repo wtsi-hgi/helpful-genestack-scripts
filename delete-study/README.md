@@ -1,0 +1,3 @@
+### delete study
+
+arvados script.
