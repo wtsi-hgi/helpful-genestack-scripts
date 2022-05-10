@@ -145,10 +145,10 @@ process_bucket () {
 
     # Do we get rid of any old tarballs?
     # We keep the last 6 backups or 6 months worth of backups - whichever's more
-    if [[ $(find . -maxdepth 1 -type f -mtime -6 -name "*.$bucket.tar.gz" | wc -l) -ge 6 ]]; then
+    if [[ $(find . -maxdepth 1 -type f -mtime -180 -name "*.$bucket.tar.gz" | wc -l) -ge 6 ]]; then
         log $bucket "We've got at least 6 backups from the last 6 months"
         log $bucket "We're going to delete backups from older than 6 months"
-        /usr/bin/find . -maxdepth 1 -type f -mtime +6 -name "*.$bucket.tar.gz" -delete -print
+        /usr/bin/find . -maxdepth 1 -type f -mtime +180 -name "*.$bucket.tar.gz" -delete -print
     else
         log $bucket "We don't have 6 backups from the last 6 months"
 
