@@ -3,7 +3,7 @@ This article describes how to delete templates in Genestack software using the p
   
 Requirements
 ```
-Python 2.7.*
+Python 3
 pip
 Genestack python client installed and setup with a user account/token. See How to setup the Genestack python client
 ```
