@@ -5,15 +5,13 @@ Requirements
 ```
 Python 3
 pip
-Genestack python client installed and setup with a user account/token. See How to setup the Genestack python client
+Genestack python client installed and setup with a user account/token. 
+See How to setup the Genestack python client
+  github repo: https://github.com/genestack/python-client
+  documentation: https://genestack-client.readthedocs.io/en/stable/
 ```
-  
-The delete_template_without_limitations.py script and its dependencies:
-There is also a repository with these helper scripts (including this script and dependencies) which may be checked out if you have access: https://
-github.com/genestack/auxillary-scripts/blob/master/delete_template_without_limitations.py
 
 #### Instructions
-Download the delete_template_without_limitations.zip and extract it (see Requirements).
   
 Before a template deletion all the studies which have this template set should be manually changed: another template which is not going
 to be deleted should be applied (for example, Default template). Apply template manually via the UI.
@@ -21,8 +19,16 @@ Run delete template script and follow its login instructions, replacing the host
 The script will print “Success” or an error stacktrace in case of an error.
   
 ```
-$ python delete_template_without_limitations.py --
-template_accession GSF244345 -H HOSTNAME
+$ python delete_template_without_limitations.py --template_accession GSF2330543 -H https://genestack.sanger.ac.uk -u root
+Fail to load password for alias "root": No recommended backend was available. Install a recommended 3rd party backend package; or, install the keyrings.alt package if you want to use the non-recommended backends. See https://pypi.org/project/keyring for details.
+   1) by token
+   2) by email and password
+   3) anonymously
+How do you want to login: 1
+Connecting to https://genestack.sanger.ac.uk
+token: 
+Success
+
 ```
   
 #### Warning:
