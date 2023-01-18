@@ -16,7 +16,8 @@ set -euo pipefail
 # Directory in Lustre where the backups are controlled from
 # This script creates and deletes directories and files
 # in here so ideally nothing else should use this directory
-DIR=/lustre/scratch119/humgen/teams/hgi/genestack/backups
+#DIR=/lustre/scratch119/humgen/teams/hgi/genestack/backups
+DIR=/lustre/scratch126/humgen/teams/hgi/genestack/backups
 
 # Path in IRODS where the most recent backup is copied to
 # This script creates and deletes things here, so nothing
